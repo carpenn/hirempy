@@ -1,5 +1,14 @@
 import pandas as pd
 
+def fsetdiff(df1, df2, all=True):
+    if all:
+        df_diff = pd.concat([df1, df2]).drop_duplicates(keep=False)
+        return df_diff
+    else:
+        df_diff = df1.merge(df2, on=list(df1.columns), how='left', indicator=True)
+        df_diff = df_diff[df_diff['_merge'] == 'left_only'].drop(columns='_merge')
+        return df_diff
+
 def split_data(obj, observed=None, validation=None, cv_fold=None):
     if observed is not None:
         if callable(observed):

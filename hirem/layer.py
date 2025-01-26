@@ -36,7 +36,7 @@ class hirem_layer:
 def hirem_layer_func(obj, name, method, method_class, method_options, filter_func=None, transformation=None):
     layer = hirem_layer(name, method, method_class, method_options, filter_func, transformation)
     obj.layers.append(layer)
-    obj.layers_dict[name] = layer #Store layers in a dictionary for faster access
+    #obj.layers_dict[name] = layer #Store layers in a dictionary for faster access
     return obj
 
 def layer_glm(obj, name, family, filter_func=None, transformation=None):
