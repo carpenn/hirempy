@@ -1,3 +1,13 @@
 *.pyc
 *.pyo
 __pycache__/
+
+
+#ignore the folder called build anywhere, but not files called build
+build/
+
+#ignore the folder called dist anywhere
+dist/
+
+#ignore the folder called .venv anywhere
+.venv/

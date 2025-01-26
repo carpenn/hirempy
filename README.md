@@ -1,6 +1,6 @@
-# The `hirempy` package 
+# The `hirem` package 
 
-This is the source code for the `hirempy` package, forked and ported to python from Jonas Crevecoeur's original R version and merged with Jens Robben's updates extending the package with simulation machines based on various scenarios. 
+This is the source code for the `hirem` python package. This has been forked and ported to python from Jonas Crevecoeur's original R version and merged with Jens Robben's updates extending the package with simulation machines based on various scenarios. 
 
 The following layers are supported in the orginial version:
 
