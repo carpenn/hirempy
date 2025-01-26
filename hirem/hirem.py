@@ -11,6 +11,7 @@ class hirem:
         self.data_observed = data
         self.data_training = data
         self.layers = []
+        self.layers_dict = {}
         self.updaters = []
         self.update_after = []
 

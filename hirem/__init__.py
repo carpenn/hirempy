@@ -12,3 +12,4 @@ from .layer import hirem_get_layer_pos
 from .data_management import split_data
 
 from .fit import fit
+from .fit import fit_hirem
