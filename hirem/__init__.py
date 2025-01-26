@@ -1,1 +1,2 @@
 from .simulate_scenario_baseline import simulate_scenario_baseline
+from .hirem import hirem

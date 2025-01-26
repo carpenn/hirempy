@@ -1,4 +1,4 @@
-class Hirem:
+class hirem:
     """
     Initiates the construction of a hierarchical reserving model composed of a sequence of layers.
 
