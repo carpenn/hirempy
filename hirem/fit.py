@@ -2,6 +2,39 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.formula.api import glm
 from .layer import hirem_layer
+from .layer import hirem_get_layer_pos
+
+import patsy
+
+def fit_hirem(obj, training=False, fold=None, weights=None, weight_var=None, balance_var=None, **formulas):
+    """Fits one or multiple layers of the hierarchical reserving model.
+
+    Args:
+        obj: The hirem object.
+        training: Whether to fit on training data (True) or observed data (False).
+        fold: Index of the fold for cross-validation (None for all records).
+        weights: Optional. Vector of weights.
+        weight_var: Optional. Name of the weight variable in the data.
+        balance_var: Optional. Name of the variable for balance correction.
+        **formulas: Keyword arguments where keys are layer names and values are formulas.
+    Returns:
+        The fitted hirem object.
+    """
+
+    obj.balance_var = balance_var
+    obj.weight_var = weight_var
+    obj.weights = weights
+
+    for layer_name, formula in formulas.items():
+        try:
+            index = hirem_get_layer_pos(obj, layer_name)
+        except ValueError as e:
+            print(f"Warning: Skipping layer '{layer_name}': {e}")
+            continue
+
+        obj.layers[index] = fit(obj.layers[index], obj, formula, training, fold)
+
+    return obj
 
 def fit(object, *args, **kwargs):
     """Dispatch function for fitting methods based on object class."""
@@ -41,13 +74,14 @@ def fit_layer_glm(layer, obj, formula, training=False, fold=None):
     data_filtered = data[layer.filter_func(data.copy())]
 
     if layer.transformation is not None:
-        # Apply transformation if defined
-        label = formula.split('~')[0].strip()
+        design_info = patsy.ModelDesc.from_formula(formula)
+        terms = design_info.lhs + design_info.rhs
+        label = terms[0].name()
         data_filtered[label] = layer.transformation.transform(data_filtered[label])
 
     # Handle weights
     weights_vec = None
-    if hasattr(obj, 'weights'):
+    if hasattr(obj, 'weights') and obj.weights is not None:
         weights_vec = obj.weights[data_filtered[obj.weight_var]]
 
     # Fit the GLM model using statsmodels
@@ -56,30 +90,30 @@ def fit_layer_glm(layer, obj, formula, training=False, fold=None):
     else:
         family = layer.method_options
 
-    model = glm(formula=formula, data=data_filtered, family=family, weights=weights_vec)
-    layer.fit = model.fit()  # Store the fitted model in the layer
+    model = glm(formula=formula, data=data_filtered, family=family, weights=weights_vec).fit()
+    layer.fit = model
 
     # Calculate balance correction (if applicable)
-    if hasattr(obj, 'balance_var'):
+    if hasattr(obj, 'balance_var') and obj.balance_var is not None:
         balance_correction = {}
         for group, group_data in data_filtered.groupby(obj.balance_var):
-            balance_correction[group.name] = group_data[layer.name].sum() / model.predict(group_data).sum()
+            balance_correction[group] = group_data[layer.name].sum() / model.predict(group_data).sum()
 
         # Handle potential missing levels in balance variable
         if len(balance_correction) != len(data_filtered[obj.balance_var].unique()):
             missing_levels = set(data_filtered[obj.balance_var].unique()) - set(balance_correction.keys())
             for level in missing_levels:
                 balance_correction[level] = 1
-            balance_correction = {k: v for k, v in sorted(balance_correction.items())}  # Sort for consistency
+            balance_correction = dict(sorted(balance_correction.items()))  # Sort for consistency
 
         layer.balance_correction = balance_correction
 
     # Calculate sigma or shape parameter (depending on family)
     if layer.method_options.family == 'gaussian':
-        layer.sigma = np.std(layer.fit.resid)
+        layer.sigma = np.std(model.resid)
     elif layer.method_options.family == 'gamma':
         from scipy.stats import gamma  # Assuming you have scipy installed
-        shape_result = gamma.fit(layer.fit.model.endog, layer.fit.fittedvalues)
+        shape_result = gamma.fit(model.model.endog, model.fittedvalues)
         layer.shape = shape_result[0]
         layer.shape_se = shape_result[1]
 
