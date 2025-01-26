@@ -8,3 +8,5 @@ from .layer import hirem_layer
 from .layer import layer_glm
 from .layer import layer_gbm
 from .layer import hirem_get_layer_pos
+
+from .data_management import split_data
