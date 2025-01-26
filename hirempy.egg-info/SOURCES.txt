@@ -1,5 +1,7 @@
+MANIFEST.in
 README.md
 setup.py
+data/reserving_data.csv
 hirempy/__init__.py
 hirempy/hirem.py
 hirempy/simulate_scenario_baseline.py

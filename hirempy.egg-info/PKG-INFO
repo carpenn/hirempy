@@ -1,6 +1,6 @@
 Metadata-Version: 2.2
 Name: hirempy
-Version: 0.1
+Version: 0.1.2
 Summary: A python port of the Hirem R package by Jonas Crevecoeur et al
 Home-page: https://github.com/carpenn/hirempy
 Author: Nigel Carpenter
