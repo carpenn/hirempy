@@ -82,7 +82,7 @@ def fit_layer_glm(layer, obj, formula, training=False, fold=None):
     # Handle weights
     weights_vec = None
     if hasattr(obj, 'weights') and obj.weights is not None:
-        weights_vec = obj.weights[data_filtered[obj.weight_var]]
+        weights_vec = obj.weights[data_filtered[obj.weight_var]-1]
 
     # Fit the GLM model using statsmodels
     if layer.method_options.family == 'gamma':
