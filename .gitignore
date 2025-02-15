@@ -11,3 +11,9 @@ dist/
 
 #ignore the folder called .venv anywhere
 .venv/
+
+#ignore the folder called mlruns anywhere
+mlruns/
+
+#ignore the folder called mlartifacts anywhere
+mlartifacts/

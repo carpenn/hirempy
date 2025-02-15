@@ -1,7 +1,9 @@
+import statsmodels.api as sm
 from collections import namedtuple
 
 # Define a namedtuple for family options (mimicking R's family object)
 Family = namedtuple("Family", ["family", "link"])
+#Family = sm.families.Gamma(link=sm.families.links.log)
 
 class hirem_layer:
     def __init__(self, name, method, method_class, method_options, filter_func=None, transformation=None):
